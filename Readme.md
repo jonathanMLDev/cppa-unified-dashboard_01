@@ -1,6 +1,6 @@
-# Slack Message Scraping Bot
+# CPPA Unified Dashboard - Slack Bot
 
-A Slack bot for retrieving and managing Slack workspace messages.
+A comprehensive Slack bot with real-time event handling, message scraping, and PostgreSQL database integration for managing Slack workspace data.
 
 ## 📦 Installation
 
@@ -57,6 +57,17 @@ A Slack bot for retrieving and managing Slack workspace messages.
 
 ## ⚙️ Configuration
 
+### Slack App Setup
+
+For detailed Slack App configuration including:
+
+- **Bot OAuth Scopes** - All required permissions
+- **Event Subscriptions** - Real-time event configuration
+- **Socket Mode Setup** - Step-by-step implementation guide
+- **Token Generation** - Bot and App tokens
+
+📋 **See [Slack_Bot_Setup_Reference.md](Slack_Bot_Setup_Reference.md) for complete setup instructions**
+
 ### Environment Variables
 
 ```env
@@ -65,31 +76,97 @@ SLACK_APP_TOKEN=xapp-your-app-token
 DATABASE_URL=postgresql://slack_user:your_password@localhost:5432/slack_database
 ```
 
-### Required Slack App Permissions
-
-- `channels:history` - Read message history
-- `users:read` - View people in a workspace
-
 ## 🚀 Usage
 
-### Interactive CLI
+### Running the Bot
+
+The bot supports **Socket Mode** for real-time events and an **Interactive CLI** for data operations:
 
 ```bash
 python app.py
 ```
 
-### Available Commands
+This starts:
+
+- ✅ **Socket Mode Handler** - Real-time Slack events (messages, reactions, user changes)
+- ✅ **Interactive CLI** - Data operations and database queries
+
+### Features
+
+**Real-time Event Handling (Socket Mode):**
+
+- Automatically captures and stores new messages
+- Tracks message edits and deletions
+- Monitors reactions (added/removed)
+- Syncs user changes and new team members
+- Handles direct messages and mentions
+
+**Interactive CLI Commands:**
+
+#### Data Fetching
 
 - `fetch <channelId>` - Fetch all messages from a Slack channel (API)
-- `sync <channelId>` - Sync all users and messages from Slack to DB
-- `sync_users` - Sync all users to DB
-- `get_db <channelId>` - Export channel messages from DB to `ref/db_messages.json`
-- `search <query>` - Search messages in DB and export to `ref/search_results.json`
-- `user_db <userId>` - Export a user's messages from DB to `ref/user_messages_db.json`
-- `thread_db <threadTs>` - Export a thread's messages from DB to `ref/thread_messages_db.json`
-- `thread <threadTs>` - Fetch a full thread from Slack and export to `ref/thread_messages.json`
-- `user <userId>` - Fetch user info from Slack and export to `ref/user_info.json`
-- `users` - Fetch all users from Slack and export to `ref/all_users.json`
-- `profile <userId>` - Fetch user profile from Slack and export to `ref/user_profile.json`
-- `lookup <email>` - Look up a user by email and export to `ref/user_lookup.json`
+- `thread <threadTs>` - Fetch a full thread from Slack
+- `user <userId>` - Fetch user info from Slack
+- `users` - Fetch all users from Slack workspace
+- `profile <userId>` - Fetch detailed user profile
+- `lookup <email>` - Look up a user by email
+
+#### Database Sync
+
+- `sync_all` - Sync all users and channels to database
+- `sync <channelId>` - Sync specific channel data to database
+- `sync_users` - Sync all workspace users to database
+
+#### Database Queries
+
+- `get_db <channelId>` - Export channel messages from DB
+- `search <query>` - Search messages in database
+- `user_db <userId>` - Export user's messages from DB
+- `thread_db <threadTs>` - Export thread messages from DB
+
+#### Control
+
 - `exit` | `q` | `quit` - Exit the program
+
+## 📊 Database Schema
+
+The bot uses **PostgreSQL** with **Prisma ORM** for data management:
+
+### Models
+
+- **Message** - Slack messages with threading support
+- **User** - Workspace members and bots
+- **Channel** - Channels with metadata
+- **Reaction** - Message reactions
+- **File** - File attachments
+
+### Key Features
+
+- ✅ Message threading with parent-child relationships
+- ✅ User and channel foreign key relationships
+- ✅ Automatic timestamp conversion (Unix ms → DateTime)
+- ✅ Comprehensive indexing for performance
+- ✅ Real-time data synchronization
+
+## 🔧 Advanced Configuration
+
+### Socket Mode vs HTTP Mode
+
+The bot uses **Socket Mode** by default (no public URL required). To use HTTP mode instead:
+
+1. Disable Socket Mode in Slack App settings
+2. Set up a public webhook URL
+3. Update event subscriptions to use the webhook URL
+
+### Database Migrations
+
+After schema changes:
+
+```bash
+# Create migration
+python -m prisma migrate dev --name migration_name
+
+# Generate Prisma client
+python -m prisma generate
+```

@@ -206,3 +206,13 @@ class SlackBot:
         """Get channel information."""
         response = self.webClient.conversations_info(channel=self.channelId)
         return response.data.get("channel", {})
+
+    @handle_errors(defaultReturn=[], logPrefix="All Channels ")
+    def get_all_channels(self):
+        """Get all channels in the workspace."""
+        try:
+            response = self.webClient.conversations_list()
+            return response.data.get("channels", [])
+        except Exception as e:
+            logger.error(f"Error getting all channels: {e}")
+            return []

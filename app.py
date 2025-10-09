@@ -1,15 +1,31 @@
-import threading
+import time
 import json
 import asyncio
+import threading
 
 from src.bot import SlackBot
 from src.database import DatabaseService
 from src.services import SlackDatabaseService, logger
 from config.settings import Settings
+from src.services.event_handler import eventApp, handler
+
+
+async def start_socket_mode():
+    """Start socket mode handler in background"""
+    try:
+        socket_handler = handler(eventApp, Settings.SLACK_APP_TOKEN)
+        await socket_handler.start_async()
+    except Exception as e:
+        logger.error(f"Socket mode error: {e}")
 
 
 async def main():
     """Main async function to handle database operations."""
+
+    # Start socket mode as a background task
+    loop = asyncio.new_event_loop()
+    threading.Thread(target=loop.run_forever).start()
+    asyncio.run_coroutine_threadsafe(start_socket_mode(), loop)
     token = Settings.SLACK_BOT_TOKEN
     slackBot = SlackBot(token=token)
 
@@ -24,6 +40,7 @@ async def main():
         logger.info("Available commands:")
         logger.info("  fetch <channelId> - Fetch all messages from a channel")
         logger.info("  sync <channelId> - Sync all data to database")
+        logger.info("  sync_all - Sync all data to database")
         logger.info("  sync_users - Sync all users to database")
         logger.info("  get_db <channelId> - Get messages from database")
         logger.info("  search <query> - Search messages in database")
@@ -51,8 +68,15 @@ async def main():
                 with open("ref/all_messages.json", "w", encoding="utf-8") as f:
                     json.dump(res, f)
                 logger.info(f"Saved {len(res)} messages to all_messages.json")
+            elif userInput == "sync_all":
+                await slackDbService.sync_all_users()
+                channels = slackBot.get_all_channels()
+                for channel in channels:
+                    result = await slackDbService.sync_all_data(channel.get("id"))
+
             elif userInput.startswith("sync "):
                 _, channelId = userInput.split()
+                await slackDbService.sync_all_users()
                 result = await slackDbService.sync_all_data(channelId)
                 logger.info(
                     f"Synced {result['users']} users and {result['messages']} messages to database"

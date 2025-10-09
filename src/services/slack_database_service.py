@@ -13,6 +13,21 @@ class SlackDatabaseService:
         self.slackBot = slackBot
         self.dbService = dbService
 
+    async def insert_channel(self, channel: Dict[str, Any]):
+        """Insert a channel into the database."""
+        try:
+            await self.dbService.create_channel(channel)
+        except Exception as e:
+            logger.error(f"Error inserting channel {channel.get('id')}: {e}")
+
+    async def sync_all_users(self):
+        """Sync all users into the database."""
+        try:
+            usersData = self.slackBot.get_all_users()
+            await self.dbService.bulk_create_users(usersData)
+        except Exception as e:
+            logger.error(f"Error syncing all users: {e}")
+
     async def sync_all_data(self, channelId: str) -> Dict[str, int]:
         """Sync all Slack data to database."""
         try:
@@ -20,28 +35,20 @@ class SlackDatabaseService:
 
             # Set channel for bot
             self.slackBot.set_channel_id(channelId)
-            
-            # Get all users
-            logger.info("Fetching all users...")
-            usersData = self.slackBot.get_all_users()
-            usersCount = await self.dbService.bulk_create_users(usersData)
-            
+
             # Get channel info
             logger.info("Fetching channel info...")
             channelData = self.slackBot.get_channel_info()
             channelCreateResult = await self.dbService.create_channel(channelData)
-            
+
             logger.info(f"Created channel: {channelCreateResult}")
 
             # Get all messages
             logger.info("Fetching all messages...")
             messagesData = self.slackBot.get_all_history()
-            messagesCount = await self.dbService.bulk_create_messages(
-                messagesData, channelId
-            )
 
-            logger.info(f"Sync completed: {usersCount} users, {messagesCount} messages")
-            return {"users": usersCount, "messages": messagesCount}
+            logger.info(f"Sync completed for channel {channelId}")
+
         except Exception as e:
             logger.error(f"Error syncing data: {e}")
 
