@@ -31,3 +31,4 @@ downloads/
 # Reference files
 ref/
 prisma/migrations/
+data/
