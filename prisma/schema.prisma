@@ -18,6 +18,7 @@ model Message {
   type            String     @default("message")
   subtype         String?
   isEdited        Boolean    @default(false)
+  isDeleted       Boolean    @default(false)
   editedAt        String?
   editedBy        String?
   threadTs        String?

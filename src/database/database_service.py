@@ -117,9 +117,17 @@ class DatabaseService:
             # Extract purpose and topic data
             purpose = channelData.get("purpose", {})
             topic = channelData.get("topic", {})
-            
-            created = datetime.fromtimestamp(channelData.get("created")) if channelData.get("created") else None
-            updated = datetime.fromtimestamp(channelData.get("updated") / 1000) if channelData.get("updated") else None
+
+            created = (
+                datetime.fromtimestamp(channelData.get("created"))
+                if channelData.get("created")
+                else None
+            )
+            updated = (
+                datetime.fromtimestamp(channelData.get("updated") / 1000)
+                if channelData.get("updated")
+                else None
+            )
 
             data = {
                 "id": channelData["id"],
@@ -144,7 +152,9 @@ class DatabaseService:
                 "contextTeamId": channelData.get("context_team_id"),
                 "sharedTeamIds": channelData.get("shared_team_ids", []),
                 "pendingShared": channelData.get("pending_shared", []),
-                "pendingConnectedTeamIds": channelData.get("pending_connected_team_ids", []),
+                "pendingConnectedTeamIds": channelData.get(
+                    "pending_connected_team_ids", []
+                ),
                 "parentConversation": channelData.get("parent_conversation"),
                 "lastRead": channelData.get("last_read"),
                 "topic": topic.get("value") if topic else None,
@@ -250,6 +260,16 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"Error creating message {messageData.get('ts')}: {e}")
 
+    async def update_message(self, messageId: str, messageData: Dict[str, Any]):
+        """Update a message."""
+        try:
+            return await self.prisma.message.update(
+                where={"id": messageId}, data=messageData
+            )
+        except Exception as e:
+            logger.error(f"Error updating message {messageId}: {e}")
+            return None
+
     async def get_message(self, messageId: str) -> Optional[Message]:
         """Get message by ID with all relations."""
         try:
@@ -269,6 +289,15 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"Error getting message {messageId}: {e}")
             return None
+
+    async def delete_message(self, messageId: str):
+        """Delete a message."""
+        try:
+            await self.prisma.message.update(
+                where={"id": messageId}, data={"isDeleted": True}
+            )
+        except Exception as e:
+            logger.error(f"Error deleting message {messageId}: {e}")
 
     async def get_channel_messages(
         self, channelId: str, limit: int = 100
@@ -359,30 +388,48 @@ class DatabaseService:
         """Create reactions for a message."""
         try:
             for reactionData in reactionsData:
-                data = {
-                    "name": reactionData["name"],
-                    "count": reactionData["count"],
-                    "userId": reactionData["users"][0],
-                    "messageId": messageId,
-                }
-                existingReaction = await self.prisma.reaction.find_unique(
-                    where={
-                        "messageId_userId_name": {
-                            "messageId": messageId,
-                            "userId": reactionData["users"][0],
-                            "name": reactionData["name"],
-                        }
+                for user in reactionData["users"]:
+                    data = {
+                        "name": reactionData["name"],
+                        "userId": user,
+                        "messageId": messageId,
                     }
-                )
-                if existingReaction:
-                    await self.prisma.reaction.update(
-                        where={"id": existingReaction.id}, data=data
+                    existingReaction = await self.prisma.reaction.find_unique(
+                        where={
+                            "messageId_userId_name": {
+                                "messageId": messageId,
+                                "userId": user,
+                                "name": reactionData["name"],
+                            }
+                        }
                     )
-                else:
-                    await self.prisma.reaction.create(data=data)
+                    if existingReaction:
+                        continue
+                    else:
+                        await self.prisma.reaction.create(data=data)
 
         except Exception as e:
             logger.error(f"Error creating reactions for message {messageId}: {e}")
+
+    async def _delete_reactions(
+        self, messageId: str, reactionsData: List[Dict[str, Any]]
+    ):
+        """Delete reactions for a message."""
+        try:
+            for reactionData in reactionsData:
+                for user in reactionData["users"]:
+                    await self.prisma.reaction.delete(
+                        where={
+                            "messageId_userId_name": {
+                                "messageId": messageId,
+                                "userId": user,
+                                "name": reactionData["name"],
+                            }
+                        }
+                    )
+
+        except Exception as e:
+            logger.error(f"Error deleting reactions for message {messageId}: {e}")
 
     async def _create_files(
         self, messageId: str, filesData: List[Dict[str, Any]], userId: str
