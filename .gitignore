@@ -32,3 +32,5 @@ downloads/
 ref/
 prisma/migrations/
 data/
+BoostDepth/boost/
+BoostDepth/dependencies/
