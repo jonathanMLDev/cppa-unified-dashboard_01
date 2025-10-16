@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional, TYPE_CHECKING
+from typing import List, Dict, Any, Optional, TYPE_CHECKING, Tuple
 
 from src.services import logger
 import json
@@ -9,95 +9,100 @@ if TYPE_CHECKING:
 
 
 class SlackDatabaseService:
-    def __init__(self, slackBot: "SlackBot", dbService: "DatabaseService"):
-        self.slackBot = slackBot
-        self.dbService = dbService
+    def __init__(self, slack_bot: "SlackBot", db_service: "DatabaseService"):
+        self.slack_bot = slack_bot
+        self.db_service = db_service
 
     async def insert_channel(self, channel: Dict[str, Any]):
         """Insert a channel into the database."""
         try:
-            await self.dbService.create_channel(channel)
+            await self.db_service.create_channel(channel)
         except Exception as e:
             logger.error(f"Error inserting channel {channel.get('id')}: {e}")
 
     async def sync_all_users(self):
         """Sync all users into the database."""
         try:
-            usersData = self.slackBot.get_all_users()
-            await self.dbService.bulk_create_users(usersData)
+            users_data = self.slack_bot.get_all_users()
+            await self.db_service.bulk_create_users(users_data)
         except Exception as e:
             logger.error(f"Error syncing all users: {e}")
 
-    async def sync_all_data(self, channelId: str) -> Dict[str, int]:
+    async def sync_all_data(self) -> Dict[str, int]:
         """Sync all Slack data to database."""
         try:
-            logger.info(f"Starting data sync for channel {channelId}")
+            channels = self.slack_bot.get_all_channels()
+            for channel in channels:
+                channel_id = channel.get("id")
+                logger.info(f"Starting data sync for channel {channel_id}")
 
-            # Set channel for bot
-            self.slackBot.set_channel_id(channelId)
+                # Set channel for bot
+                self.slack_bot.set_channel_id(channel_id)
 
-            # Get channel info
-            logger.info("Fetching channel info...")
-            channelData = self.slackBot.get_channel_info()
-            channelCreateResult = await self.dbService.create_channel(channelData)
+                # Get channel info
+                logger.info("Fetching channel info...")
+                channel_data = self.slack_bot.get_channel_info()
+                channel_create_result = await self.db_service.create_channel(
+                    channel_data
+                )
 
-            logger.info(f"Created channel: {channelCreateResult}")
+                logger.info(f"Created channel: {channel_create_result}")
 
-            # Get all messages
-            logger.info("Fetching all messages...")
-            messagesData = self.slackBot.get_all_history()
+                # Get all messages
+                logger.info("Fetching all messages...")
+                messages_data = self.slack_bot.get_all_history()
 
-            logger.info(f"Sync completed for channel {channelId}")
+                logger.info(f"Sync completed for channel {channel_id}")
 
         except Exception as e:
             logger.error(f"Error syncing data: {e}")
 
-    async def sync_channel_messages(self, channelId: str) -> int:
+    async def sync_channel_messages(self, channel_id: str) -> int:
         """Sync messages from a specific channel."""
         try:
-            logger.info(f"Syncing messages from channel {channelId}")
-            self.slackBot.set_channel_id(channelId)
+            logger.info(f"Syncing messages from channel {channel_id}")
+            self.slack_bot.set_channel_id(channel_id)
 
-            messagesData = self.slackBot.get_all_history()
-            messagesCount = await self.dbService.bulk_create_messages(messagesData)
+            messages_data = self.slack_bot.get_all_history()
+            messages_count = await self.db_service.bulk_create_messages(messages_data)
 
-            logger.info(f"Synced {messagesCount} messages from channel {channelId}")
-            return messagesCount
+            logger.info(f"Synced {messages_count} messages from channel {channel_id}")
+            return messages_count
         except Exception as e:
-            logger.error(f"Error syncing channel messages {channelId}: {e}")
+            logger.error(f"Error syncing channel messages {channel_id}: {e}")
 
-    async def sync_thread_messages(self, threadTs: str) -> int:
+    async def sync_thread_messages(self, thread_ts: str) -> int:
         """Sync messages from a specific thread."""
         try:
-            logger.info(f"Syncing thread messages {threadTs}")
+            logger.info(f"Syncing thread messages {thread_ts}")
 
-            threadMessages = self.slackBot.get_thread_by_root_message(threadTs)
-            messagesCount = await self.dbService.bulk_create_messages(threadMessages)
+            thread_messages = self.slack_bot.get_thread_by_root_message(thread_ts)
+            messages_count = await self.db_service.bulk_create_messages(thread_messages)
 
-            logger.info(f"Synced {messagesCount} thread messages")
-            return messagesCount
+            logger.info(f"Synced {messages_count} thread messages")
+            return messages_count
         except Exception as e:
-            logger.error(f"Error syncing thread messages {threadTs}: {e}")
+            logger.error(f"Error syncing thread messages {thread_ts}: {e}")
 
     async def sync_user_data(self) -> int:
         """Sync all users from workspace."""
         try:
             logger.info("Syncing all users...")
 
-            usersData = self.slackBot.get_all_users()
-            usersCount = await self.dbService.bulk_create_users(usersData)
+            users_data = self.slack_bot.get_all_users()
+            users_count = await self.db_service.bulk_create_users(users_data)
 
-            logger.info(f"Synced {usersCount} users")
-            return usersCount
+            logger.info(f"Synced {users_count} users")
+            return users_count
         except Exception as e:
             logger.error(f"Error syncing users: {e}")
 
     async def get_channel_messages_from_db(
-        self, channelId: str, limit: int = 100
+        self, channel_id: str, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """Get messages from database with thread structure."""
         try:
-            messages = await self.dbService.get_channel_messages(channelId, limit)
+            messages = await self.db_service.get_channel_messages(channel_id, limit)
 
             # Convert to dict format for JSON serialization
             if len(messages) == 0:
@@ -196,15 +201,15 @@ class SlackDatabaseService:
 
             return result
         except Exception as e:
-            logger.error(f"Error getting channel messages from DB {channelId}: {e}")
+            logger.error(f"Error getting channel messages from DB {channel_id}: {e}")
             return []
 
     async def search_messages_in_db(
-        self, query: str, channelId: Optional[str] = None
+        self, query: str, channel_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """Search messages in database."""
         try:
-            messages = await self.dbService.search_messages(query, channelId)
+            messages = await self.db_service.search_messages(query, channel_id)
 
             result = []
             for message in messages:
@@ -243,11 +248,11 @@ class SlackDatabaseService:
             return []
 
     async def get_user_messages_from_db(
-        self, userId: str, limit: int = 50
+        self, user_id: str, limit: int = 50
     ) -> List[Dict[str, Any]]:
         """Get messages from a specific user."""
         try:
-            messages = await self.dbService.get_user_messages(userId, limit)
+            messages = await self.db_service.get_user_messages(user_id, limit)
 
             result = []
             for message in messages:
@@ -282,13 +287,13 @@ class SlackDatabaseService:
 
             return result
         except Exception as e:
-            logger.error(f"Error getting user messages from DB {userId}: {e}")
+            logger.error(f"Error getting user messages from DB {user_id}: {e}")
             return []
 
-    async def get_thread_messages_from_db(self, threadTs: str) -> List[Dict[str, Any]]:
+    async def get_thread_messages_from_db(self, thread_ts: str) -> List[Dict[str, Any]]:
         """Get thread messages from database."""
         try:
-            messages = await self.dbService.get_thread_messages(threadTs)
+            messages = await self.db_service.get_thread_messages(thread_ts)
 
             result = []
             for message in messages:
@@ -322,5 +327,26 @@ class SlackDatabaseService:
 
             return result
         except Exception as e:
-            logger.error(f"Error getting thread messages from DB {threadTs}: {e}")
+            logger.error(f"Error getting thread messages from DB {thread_ts}: {e}")
+            return []
+
+    async def get_direct_messages(self) -> Tuple[int, int]:
+        """Get direct messages from database."""
+        try:
+            dm_channels = self.slack_bot.get_direct_channels()
+            msg_count = 0
+            for channel in dm_channels:
+                self.slack_bot.set_channel_id(channel.get("id"))
+                channel_data = self.slack_bot.get_channel_info()
+                await self.db_service.create_channel(channel_data)
+                history = self.slack_bot.get_all_history()
+
+                result = await self.db_service.bulk_create_messages(
+                    history, channel_data.get("id")
+                )
+                msg_count += result
+            return len(dm_channels), msg_count
+
+        except Exception as e:
+            logger.error(f"Error getting direct messages from DB: {e}")
             return []

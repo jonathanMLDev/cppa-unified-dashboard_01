@@ -3,7 +3,7 @@ import json
 import asyncio
 import threading
 
-from src.bot import SlackBot, eventApp, handler, RAGClient
+from src.bot import SlackBot, event_app, handler, RAGClient
 from src.database import DatabaseService
 from src.services import SlackDatabaseService, logger
 from config.settings import Settings
@@ -12,7 +12,7 @@ from config.settings import Settings
 async def start_socket_mode():
     """Start socket mode handler in background"""
     try:
-        socket_handler = handler(eventApp, Settings.SLACK_APP_TOKEN)
+        socket_handler = handler(event_app, Settings.SLACK_APP_TOKEN)
         await socket_handler.start_async()
     except Exception as e:
         logger.error(f"Socket mode error: {e}")
@@ -84,6 +84,7 @@ async def main():
         logger.error(f"Error in main: {e}")
     finally:
         if db_service:
+            logger.info("Disconnecting from database")
             await db_service.disconnect()
         logger.info("Disconnected from database")
 
