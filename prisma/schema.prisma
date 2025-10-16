@@ -91,7 +91,7 @@ model User {
   botId                  String?
   apiAppId               String?
   createdAt              DateTime   @default(now())
-  updatedAt              DateTime   @default(now()) @updatedAt
+  updatedAt              DateTime   @updatedAt
   createdChannels        Channel[]  @relation("ChannelCreator")
   Message                Message[]
   Reaction               Reaction[]

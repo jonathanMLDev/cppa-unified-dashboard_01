@@ -22,7 +22,7 @@ class RAGClient:
             api_key: API key for authentication.
         """
         self.db_service = None
-        self.base_url = base_url or Settings.BASIC_URL_ENDPOINT
+        self.base_url = base_url or Settings.RAG_BASIC_URL
         self.api_key = api_key or Settings.RAG_API_KEY
         self.headers = {
             "Content-Type": "application/json",
