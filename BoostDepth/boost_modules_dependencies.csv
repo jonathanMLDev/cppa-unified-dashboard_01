@@ -1,4 +1,4 @@
-Operation,Module,Header,From
+Operation,Module_A,Module_B,Header,From
 Primary,accumulators,array,boost/array.hpp,boost/accumulators/statistics/p_square_quantile.hpp boost/accumulators/statistics/weighted_p_square_quantile.hpp
 Primary,accumulators,assert,boost/assert.hpp,boost/accumulators/framework/accumulators/droppable_accumulator.hpp boost/accumulators/numeric/functional/valarray.hpp boost/accumulators/numeric/functional/vector.hpp boost/accumulators/statistics/rolling_window.hpp boost/accumulators/statistics/tail.hpp
 Primary,accumulators,circular_buffer,boost/circular_buffer.hpp,boost/accumulators/statistics/rolling_window.hpp
