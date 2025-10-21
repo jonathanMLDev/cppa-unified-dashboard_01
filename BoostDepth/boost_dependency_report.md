@@ -1,6 +1,6 @@
 # Boost Dependency Analysis Report
 
-**Generated:** 2025-10-21 22:23:18
+**Generated:** 2025-10-22 00:30:57
 
 ## Overall Statistics
 
@@ -10,8 +10,8 @@
 |--------|-------|
 | Total modules | 152 |
 | Total module relations | 2764 |
-| Primary only (1) | 1381 |
-| Reverse only (-1) | 1381 |
+| Primary Dependents | 1381 |
+| Primary Dependencies | 1381 |
 | Both operations (0) | 2 |
 
 ### Header Relations
@@ -20,13 +20,13 @@
 |--------|-------|
 | Total headers | 7741 |
 | Total header relations | 40446 |
-| Reverse only (1) | 20223 |
-| Primary only (-1) | 20223 |
+| Primary Dependencies | 20223 |
+| Reverse Dependents | 20223 |
 | Both operations (0) | 0 |
 
-## Top Modules by Primary Dependencies (Total)
+## Top Modules by All Dependents
 
-| Rank | Module | Primary (Level 1) | Primary (Total) | Reverse (Level 1) | Reverse (Total) |
+| Rank | Module | Primary Dependents | All Dependents | Primary Dependencies | All Dependencies |
 |------|--------|-------------------|-----------------|-------------------|------------------|
 | 1 | numeric~odeint | 19 | 83 | 0 | 0 |
 | 2 | graph_parallel | 26 | 77 | 0 | 0 |
@@ -49,9 +49,9 @@
 | 19 | serialization | 23 | 57 | 11 | 16 |
 | 20 | spirit | 30 | 56 | 6 | 19 |
 
-## Top Modules by Primary Dependencies (Level 1)
+## Top Modules by Primary Dependents 
 
-| Rank | Module | Primary (Level 1) | Primary (Total) | Reverse (Level 1) | Reverse (Total) |
+| Rank | Module | Primary Dependents | All Dependents | Primary Dependencies | All Dependencies |
 |------|--------|-------------------|-----------------|-------------------|------------------|
 | 1 | graph | 42 | 71 | 3 | 6 |
 | 2 | log | 36 | 68 | 0 | 0 |
@@ -74,9 +74,9 @@
 | 19 | mpi | 18 | 73 | 3 | 3 |
 | 20 | range | 17 | 30 | 22 | 45 |
 
-## Top Modules by Reverse Dependencies (Total)
+## Top Modules by All Dependencies
 
-| Rank | Module | Primary (Level 1) | Primary (Total) | Reverse (Level 1) | Reverse (Total) |
+| Rank | Module | Primary Dependents | All Dependents | Primary Dependencies | All Dependencies |
 |------|--------|-------------------|-----------------|-------------------|------------------|
 | 1 | config | 0 | 0 | 137 | 141 |
 | 2 | assert | 1 | 1 | 94 | 129 |
@@ -99,9 +99,9 @@
 | 19 | function | 5 | 6 | 22 | 71 |
 | 20 | function_types | 6 | 12 | 9 | 70 |
 
-## Top Modules by Reverse Dependencies (Level 1)
+## Top Modules by Primary Dependencies
 
-| Rank | Module | Primary (Level 1) | Primary (Total) | Reverse (Level 1) | Reverse (Total) |
+| Rank | Module | Primary Dependents | All Dependents | Primary Dependencies | All Dependencies |
 |------|--------|-------------------|-----------------|-------------------|------------------|
 | 1 | config | 0 | 0 | 137 | 141 |
 | 2 | core | 4 | 4 | 98 | 115 |
@@ -124,9 +124,9 @@
 | 19 | mp11 | 0 | 0 | 20 | 92 |
 | 20 | tuple | 4 | 6 | 17 | 71 |
 
-## Top Headers by Primary Dependencies
+## Top Headers by All Dependents
 
-| Rank | Header | Primary (Level 1) | Primary (Total) | Reverse (Level 1) | Reverse (Total) |
+| Rank | Header | Primary Dependents | All Dependents | Primary Dependencies | All Dependencies |
 |------|--------|-------------------|-----------------|-------------------|------------------|
 | 1 | boost/config.hpp | 2145 | 4690 | 0 | 0 |
 | 2 | boost/detail/workaround.hpp | 276 | 1775 | 0 | 0 |
@@ -149,9 +149,9 @@
 | 19 | boost/mp11/utility.hpp | 54 | 338 | 0 | 0 |
 | 20 | boost/preprocessor/inc.hpp | 39 | 329 | 0 | 0 |
 
-## Top Headers by Reverse Dependencies
+## Top Headers by All Dependencies
 
-| Rank | Header | Primary (Level 1) | Primary (Total) | Reverse (Level 1) | Reverse (Total) |
+| Rank | Header | Primary Dependents | All Dependents | Primary Dependencies | All Dependencies |
 |------|--------|-------------------|-----------------|-------------------|------------------|
 | 1 | boost/graph/distributed/strong_components.hpp | 0 | 0 | 12 | 130 |
 | 2 | boost/graph/distributed/adjacency_list.hpp | 0 | 0 | 20 | 122 |
@@ -176,9 +176,9 @@
 
 ## Module Dependency Distribution
 
-### Primary Dependencies Distribution
+### Primary Dependents Distribution
 
-| Dependencies | Number of Modules |
+| Dependents | Number of Modules |
 |--------------|-------------------|
 | 42 | 1 |
 | 36 | 1 |
@@ -196,7 +196,7 @@
 | 16 | 5 |
 | 15 | 4 |
 
-### Reverse Dependencies Distribution
+### Primary Dependencies Distribution
 
 | Dependencies | Number of Modules |
 |--------------|-------------------|
