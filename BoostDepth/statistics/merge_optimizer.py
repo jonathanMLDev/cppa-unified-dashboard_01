@@ -103,7 +103,7 @@ class MergeOptimizer:
         
         return {
             'original_edges': original_edges,
-            'internal_edges': internal_edges,
+            'internal_edges': internal_edges / 2,
             'merged_edges': merged_edges,
             'edge_reduction': edge_reduction
         }
@@ -431,8 +431,8 @@ class MergeOptimizer:
                 count = self.module_relation_count.get(mod, {})
                 md_content.append(f"**{mod}:**\n")
                 md_content.append(f"- Edges from this module: {len(self.module_relation.get(mod, {}))}\n")
-                md_content.append(f"- Dependents Relations: Primary = {count.get('Primary_level_1', 0)}, All = {count.get('Primary_total', 0)}\n")
-                md_content.append(f"- Dependencies Relations: Primary = {count.get('Reverse_level_1', 0)}, All = {count.get('Reverse_total', 0)}\n\n")
+                md_content.append(f"- Dependencies Relations: Primary = {count.get('Primary_level_1', 0)}, All = {count.get('Primary_total', 0)}\n")
+                md_content.append(f"- Dependents Relations: Primary = {count.get('Reverse_level_1', 0)}, All = {count.get('Reverse_total', 0)}\n\n")
             
             md_content.append("### Summary\n\n")
             md_content.append("After merge, the combined module would have:\n")
@@ -556,7 +556,7 @@ def main():
     parser.add_argument(
         "--merge-count",
         type=int,
-        default=3,
+        default=4,
         help="Number of modules/headers to merge together (default: 3)"
     )
     parser.add_argument(
@@ -574,7 +574,7 @@ def main():
     parser.add_argument(
         "--output",
         type=str,
-        default="module_merge_recommendations_3.md",
+        default="module_merge_recommendations.md",
         help="Output markdown file path (default: module_merge_recommendations.md)"
     )
     
@@ -622,7 +622,7 @@ def main():
     
     # Export to markdown
     print(f"\nExporting results to markdown file...")
-    output_path = optimizer.export_module_merge_to_markdown(args.output, args.top_n)
+    output_path = optimizer.export_module_merge_to_markdown(f"{args.merge_count}_{args.output}", args.top_n)
     print(f"✓ Results saved to: {output_path}\n")
     
     # Calculate and print header merge recommendations
