@@ -293,14 +293,14 @@ class MergeModuleOptimizer:
             self.calculate_all_module_damages()
         
         # Sort by edge reduction (higher reduction = better)
-        # sorted_merges = sorted(
-        #     self.module_merge_damages.items(),
-        #     key=lambda x: -self._calculate_edge_metrics(x[0])['edge_reduction']
-        # )
         sorted_merges = sorted(
             self.module_merge_damages.items(),
-            key=lambda x: -x[1]['total_damage']
+            key=lambda x: -self._calculate_edge_metrics(x[0])['edge_reduction']
         )
+        # sorted_merges = sorted(
+        #     self.module_merge_damages.items(),
+        #     key=lambda x: -x[1]['total_damage']
+        # )
         seen_modules = set()
         final_merges = []
         count_limit = int(top_n / 4) + 1
@@ -486,7 +486,7 @@ def main():
         "--candidate-count",
         type=int,
         default=40,
-        help="Number of candidate modules to consider for merging (default: 30)"
+        help="Number of candidate modules to consider for merging (default: 40)"
     )
     
     args = parser.parse_args()
