@@ -4,14 +4,6 @@
 **Sorting:** By Edge Reduction (highest first)
 **Strategy:** Best merges across all merge counts (2-5 modules)
 
-## Overall Impact
-| Metric | Value |
-|--------|-------|
-| Original total edges | 2764 |
-| Reduced total edges | -5581 |
-| Edge reduction | 8345 |
-| Modules merged | 12 |
-
 ---
 
 ## Rank 1: assert + config + core + throw_exception + type_traits

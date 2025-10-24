@@ -373,13 +373,13 @@ class MergeModuleOptimizer:
         md_content.append("**Sorting:** By Edge Reduction (highest first)\n")
         md_content.append("**Strategy:** Best merges across all merge counts (2-5 modules)\n\n")
         
-        md_content.append("## Overall Impact\n")
-        md_content.append("| Metric | Value |\n")
-        md_content.append("|--------|-------|\n")
-        md_content.append(f"| Original total edges | {impact['original_edges']} |\n")
-        md_content.append(f"| Reduced total edges | {impact['reduced_edges']} |\n")
-        md_content.append(f"| Edge reduction | {impact['edge_reduction']} |\n")
-        md_content.append(f"| Modules merged | {impact['modules_merged']} |\n\n")
+        # md_content.append("## Overall Impact\n")
+        # md_content.append("| Metric | Value |\n")
+        # md_content.append("|--------|-------|\n")
+        # md_content.append(f"| Original total edges | {impact['original_edges']} |\n")
+        # md_content.append(f"| Reduced total edges | {impact['reduced_edges']} |\n")
+        # md_content.append(f"| Edge reduction | {impact['edge_reduction']} |\n")
+        # md_content.append(f"| Modules merged | {impact['modules_merged']} |\n\n")
         
         md_content.append("---\n\n")
         
