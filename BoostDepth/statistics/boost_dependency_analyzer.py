@@ -9,7 +9,10 @@ import csv
 from collections import defaultdict
 from typing import Dict, DefaultDict
 from pathlib import Path
-
+from clang import cindex
+import os
+import re
+import json
 
 class BoostDependencyAnalyzer:
     """
@@ -44,6 +47,7 @@ class BoostDependencyAnalyzer:
         # Header relation: header_relation[Header_from_Module_B][Header_from_Module_A] = 1/-1/0
         self.header_relation: Dict[str, Dict[str, int]] = {}
         self.header_relation_count: Dict[str, Dict[str, int]] = {}
+        self.header_deps: Dict[str, Dict[str, int]] = {}
         
         # Temporary storage for tracking operations
         self._module_operations: DefaultDict[str, DefaultDict[str, set]] = defaultdict(lambda: defaultdict(set))
@@ -91,6 +95,93 @@ class BoostDependencyAnalyzer:
         # Clear temporary storage
         self._module_operations.clear()
         self._header_operations.clear()
+        
+        header_deps_file = "headers_dependencies.json"
+        self.get_header_relation_by_header()
+        
+        if not Path(header_deps_file).exists():
+            self.get_header_relation_by_header()
+        else:
+            with open(header_deps_file, "r", encoding="utf-8") as f:
+                self.header_deps = json.load(f)
+        self.complete_header_relation()
+    
+    def complete_header_relation(self) -> None:
+        header_list = list(self.header_deps.keys())
+        self.no_exist_header_include = {}
+        for header in header_list:
+            rel_header_list = list(self.header_deps[header].keys())
+            for dep in rel_header_list:
+                rel = self.header_deps[header][dep]
+                if dep not in self.header_deps:
+                    self.no_exist_header_include[header] = dep
+                elif header not in self.header_deps[dep]:
+                    self.header_deps[dep][header] = -rel
+                elif self.header_deps[dep][header] == rel:
+                    self.header_deps[dep][header] = 0
+                    self.header_deps[header][dep] = 0
+                
+        print(f"Completed header relation for {len(self.header_relation)} headers")
+        
+    def get_header_relation_by_header(self, boost_root_path: str = None, 
+                                      libclang_path: str = r"C:\Program Files\LLVM\bin") -> Dict[str, Dict[str, int]]:
+        """
+        Parse Boost headers using libclang to build header-to-header dependencies.
+        
+        This method directly analyzes header files using libclang to extract #include
+        directives and build a dependency graph.
+        
+        Args:
+            boost_root_path: Path to the Boost installation root (containing boost/ directory)
+                           If None, defaults to 'D:\\boost_1_89_0\\boost'
+            libclang_path: Path to libclang library
+            
+        Returns:
+            Dictionary mapping header paths to their dependencies with relation values
+        """
+        if boost_root_path is None:
+            boost_root_path = r'D:\boost_1_89_0\boost'
+        
+        print(f"Parsing Boost headers from: {boost_root_path}")
+        print(f"Using libclang from: {libclang_path}")
+        
+        # Configure libclang
+        cindex.Config.set_library_path(libclang_path)
+        index = cindex.Index.create()
+        
+        # Temporary storage for direct dependencies
+        direct_deps = {}
+        header_count = 0
+        boost_Path = Path(boost_root_path)
+        # Walk through all Boost headers
+        for root, _, files in os.walk(boost_Path):
+            for f in files:
+                if f.endswith('.hpp') or f.endswith('.h'):
+                    cur_header = Path(root) / f
+                    cur_header_str = "boost/" + cur_header.relative_to(boost_Path).as_posix()
+                    self.header_deps[cur_header_str] = {}
+                    path = os.path.join(root, f)
+                    
+                    with open(path, encoding='utf-8') as header_file:
+                        header_content = header_file.read()
+                    header_content = re.sub(r"/\*.*?\*/", "", header_content, flags=re.DOTALL)
+                    for line in header_content.split("\n"):
+                        if line.startswith("//") or line.startswith("/*"):
+                            continue
+                        if line.startswith("``"):
+                            continue
+                        m = re.search(r'#include\s+[<"](.+?)[">]', line)
+                        if m:
+                            header_name = m.group(1)
+                            header_name = header_name.replace("//", "/")
+                            if "boost/" in header_name and ".h" in header_name:
+                                self.header_deps[cur_header_str][header_name] = 1
+                                
+        print(f"Successfully parsed {header_count} headers")
+        file_name = "headers_dependencies.json"
+        with open(file_name, "w", encoding="utf-8") as f:
+            json.dump(self.header_deps, f, indent=4)
+        
     
     def _build_module_relations(self) -> None:
         """
@@ -274,12 +365,20 @@ class BoostDependencyAnalyzer:
             Dictionary mapping header names to their count of relations (level_1 and total)
         """
         self.header_relation_count = {}
-        
+        target_data = self.header_deps
         # Initialize counts for all headers
-        for hdr_name, hdr_deps in self.header_relation.items():
+        self.conflict_headers = {}
+        self.no_reverse_headers = {}
+        for hdr_name, hdr_deps in target_data.items():
             primary_level_1 = sum(1 for rel_value in hdr_deps.values() if rel_value == 1)
             reverse_level_1 = sum(1 for rel_value in hdr_deps.values() if rel_value == -1)
             
+            conf_headers = [dep for dep in hdr_deps.keys() if hdr_deps[dep] == 0]
+            if len(conf_headers) > 0:
+                self.conflict_headers[hdr_name] = conf_headers
+            
+            if reverse_level_1 == 0:
+                self.no_reverse_headers[hdr_name] = hdr_deps
             self.header_relation_count[hdr_name] = {
                 "Primary_level_1": primary_level_1,
                 "Primary_total": primary_level_1,
@@ -288,12 +387,13 @@ class BoostDependencyAnalyzer:
             }
         
         # Calculate transitive counts
-        for hdr_name in self.header_relation:
+        for hdr_name in target_data:
             self.header_relation_count[hdr_name]["Primary_total"] += \
-                self._count_transitive_relations(self.header_relation, hdr_name, 1)
+                self._count_transitive_relations(target_data, hdr_name, 1)
             self.header_relation_count[hdr_name]["Reverse_total"] += \
-                self._count_transitive_relations(self.header_relation, hdr_name, -1)
+                self._count_transitive_relations(target_data, hdr_name, -1)
         
+                
         return self.header_relation_count
     
     def print_module_statistics(self) -> None:
@@ -703,7 +803,6 @@ def run_relation_analysis(analyzer: BoostDependencyAnalyzer) -> None:
     
     print("=" * 60)
 
-
 def main() -> None:
     """
     Main function to run the Boost dependency analysis.
@@ -729,6 +828,8 @@ def main() -> None:
     print("Reading boost_modules_dependencies.csv...")
     analyzer = BoostDependencyAnalyzer()
     analyzer.read_csv()
+
+        
     print("CSV file processed successfully!\n")
     
     # Step 2: Run analysis sections in logical order
