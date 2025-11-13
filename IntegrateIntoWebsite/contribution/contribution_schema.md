@@ -38,19 +38,29 @@ erDiagram
         string info "CharField, max_length=255, nullable — extra info (commit hash, PR number, issue number)"
     }
 
+    Wg21Contribution {
+        int id PK "AutoField, Primary Key — unique identifier for each WG21 paper contribution"
+        int email_id FK "ForeignKey -> Email.id, CASCADE, Indexed — contributor email tied to the contribution"
+        int year "IntegerField, nullable, Indexed — year of the contribution"
+        string title "CharField, max_length=255, nullable — title of the paper where the contribution was made"
+        string paper_id "CharField, max_length=255, nullable — paper ID where the contribution was made"
+    }
+
     Email ||--o{ EmailIdentifierRelation : "has many (email_id)"
     EmailIdentifier ||--o{ EmailIdentifierRelation : "has many (email_identifier_id)"
     Email ||--o{ GitHubContribution : "has many (email_id)"
+    Email ||--o{ Wg21Contribution : "has many (email_id)"
 
     EmailIdentifierRelation }o--|| Email : "belongs to (email)"
     EmailIdentifierRelation }o--|| EmailIdentifier : "belongs to (email_identifier)"
     GitHubContribution }o--|| Email : "belongs to (email)"
+    Wg21Contribution }o--|| Email : "belongs to (email)"
 
     EmailIdentifier }o--o{ Email : "many-to-many through EmailIdentifierRelation"
 ```
 
 ## Remark
 
--   Email Model: (email, source) - ensures unique email per source (same email can exist with different sources, but each combination is unique)
+- Email Model: (email, source) - ensures unique email per source (same email can exist with different sources, but each combination is unique)
 
--   EmailIdentifierRelation Model: (email, email_identifier) - ensures unique relationship between email and identifier pairs (each email can be connected to multiple identifiers, but the same email-identifier pair cannot be duplicated)
+- EmailIdentifierRelation Model: (email, email_identifier) - ensures unique relationship between email and identifier pairs (each email can be connected to multiple identifiers, but the same email-identifier pair cannot be duplicated)
