@@ -49,7 +49,7 @@ sequenceDiagram
         Claim->>DB: Query pending badge notifications
         Claim-->>FE: Return selectable notifications
         User->>FE: Select badges
-        FE->>Claim: Submit claim selection (URI, token ID, wallet) with newly registered wallet address
+        FE->>Claim: Submit claim selection (URI, token ID, wallet) with wallet address(es)
         Claim->>DB: Update claim intent, log timestamp
         Claim->>Hook: Send claim request payload (URI, token ID, wallet)
         Hook-->>Admin: Notify admin via webhook
@@ -74,12 +74,14 @@ sequenceDiagram
 
 ## End-to-End Workflow
 
+### Admin Story
+
 1. **Preparation**  
-   - Frontend retrieves token catalogue and recipient roster.  
+   - Admin retrieves token catalogue and recipient roster via frontend.  
    - Admin selects badge set (single or batch) and recipients.
 
 2. **Metadata & Persistence**  
-   - Frontend submits badge issuance payload to the IPFS service. 
+   - Admin submits badge issuance payload to the IPFS service via frontend. 
    - IPFS returns content URI plus derived metadata (hash, gateway URL).  
    - Application persists issuance record in the database, including user data, claim eligibility flags, and URI references.
 
@@ -99,27 +101,47 @@ sequenceDiagram
    - **Database-only badges**  
      - Application marks the issuance as "database-only" and stores the badge entirely in the database (no wallet required).  
      - Database generates database-only badge notification and triggers mailing service.
-     - Mailing service sends badge email to user (no wallet required).
-     - User can view badge notification history in the frontend.
-     - Database tracks issuance, views, and acknowledgements without blockchain transactions.
+     - Mailing service sends badge email to user.
 
-4. **Claim (Blockchain-backed / Contract-Stored Only)**  
-   - Claim service queries the database for contract-stored badges and associated recipient metadata.
-   - User logs into the frontend and views pending claim notifications.
-   - Frontend requests pending contract-stored badges from the claim service.
-   - Claim service queries the database for pending badge notifications and returns selectable notifications to the frontend.
-   - User selects one or more badges and provides a newly registered wallet address, then submits the claim request.
-   - Frontend sends the claim selection (URI, token ID, wallet) to the claim service.
-   - Claim service updates the database with claim intent details (URI, token ID, wallet, timestamp).
-   - Claim service sends claim request payload (URI, token ID, wallet) to admin webhook.
-   - Admin receives webhook notification.
+4. **Claim Processing (Blockchain-backed / Contract-Stored Only)**  
+   - Admin receives webhook notification when user submits a claim request.
    - Admin initiates transfer via frontend with admin wallet. Frontend requests transaction signing (from contract to wallet).
    - Admin signs transfer transaction.
    - Frontend sends the signed transfer transaction to the token contract.
    - Token contract delivers the claimed badge to the user wallet.
    - System records claim completion in the database (transaction signature, wallet, timestamp).
    - Mailing service sends claim confirmation email to the user.
-   - Database-only badges skip this section entirely – users already "own" the badge in the portal and can view/download without wallet submission or admin transfer.
+
+5. **Auditing & Reporting**  
+   - Admin accesses dashboard to view mint/claim status, IPFS hashes, and notification delivery logs.
+   - Database maintains full lifecycle history (metadata hash, issuance, claim selections, completion).
+
+---
+
+### User Story
+
+1. **Receiving Badge Notifications**  
+   - User receives email notification about badge issuance:
+     - **Blockchain-backed badges (direct wallet)**: Email contains badge details and blockchain links.
+     - **Blockchain-backed badges (contract-stored)**: Email contains claim instructions, emphasizing security posture.
+     - **Database-only badges**: Email contains badge details.
+
+2. **Viewing Badge Notifications (Database-only Badges)**  
+   - User logs into the frontend.
+   - User views badge notification history.
+   - User can view database-only badges without wallet submission or admin transfer.
+
+3. **Claiming Badges (Blockchain-backed / Contract-Stored Only)**  
+   - User logs into the frontend and views pending claim notifications.
+   - Frontend requests pending contract-stored badges from the claim service.
+   - Claim service queries the database for pending badge notifications and returns selectable notifications to the frontend.
+   - User selects one or more badges and provides wallet address(es) (one wallet can be used for multiple badges, or separate wallets for each badge), then submits the claim request.
+   - Frontend sends the claim selection (URI, token ID, wallet) to the claim service.
+   - Claim service updates the database with claim intent details (URI, token ID, wallet, timestamp).
+   - Claim service sends claim request payload (URI, token ID, wallet) to admin webhook.
+   - User waits for admin to process the claim request.
+   - User receives claim confirmation email once the badge is transferred to their wallet.
+   - **Note**: Database-only badges skip this section entirely – users already "own" the badge in the portal and can view without wallet submission or admin transfer.
 
 ---
 
@@ -227,11 +249,7 @@ erDiagram
     claim_intents ||--o{ badge_logs : "logged"
 ```
 
----
-
-5. **Auditing & Reporting**  
-   - Database maintains full lifecycle history (metadata hash, issuance, claim selections, completion).
-   - Dashboard surfaces mint/claim status, IPFS hashes, and notification delivery logs.
+**Note on `wallet_address` in `users` table**: The `wallet_address` field in the `users` table is used to support batch minting operations by admins. When an admin executes a batch-mint action, it would be impossible to manually input all wallet addresses for each recipient. Therefore, users who have a wallet address should set it in their profile page. If a user has not set their wallet address, their badge tokens are automatically minted to the token contract (vault functionality) instead of directly to their wallet, requiring them to claim the badge later.
 
 ---
 
@@ -283,7 +301,7 @@ Illustrative values for every column in the schema.
 | `badge_id` | `0b1222b9-fd3f-4c4c-8e20-04a0670a74c2` |
 | `user_id` | `8f7c7d9b-1c0d-49f1-a29c-03d0c4c2c111` |
 | `metadata_uri` | `ipfs://Qm...abc/sw323edwswef42.json (this value is for only this issuance and updated from IPFS after issuance)` |
-| `status` | `0 (pending:0, issued:1, claimed:2 (If the badge is based on database-only, then can have only 0 or 2 because of 'issued' means 'claimed'.)` |
+| `status` | `0 (pending:0, issued:1, claimed:2) Note: For database-only badges, status 1 (issued) is not used. Status transitions directly from 0 (pending) to 2 (claimed), as 'issued' and 'claimed' are equivalent for database-only badges.` |
 | `wallet_address` | `0x32ffw32....3f2` |
 | `issued_by` | `4783355a-4095-4fe8-a601-7d61d272af24` |
 | `created_at` | `2025-02-05T16:20:00Z` |
@@ -303,7 +321,7 @@ Illustrative values for every column in the schema.
 | --- | --- |
 | `id` | `6d42dc09-1a7f-4cd5-8f24-71e2fc7df7c8` |
 | `issuance_id` | `3bf34c2a-3bb0-47cb-9336-6a9c8f4ecb5a` |
-| `status` | `0(pending:0, transfered:1)` |
+| `status` | `0 (pending:0, transferred:1)` |
 | `wallet_address` | `0x32ffw32....3f2` |
 | `submitted_at` | `2025-02-06T09:30:00Z` |
 | `admin_response_at` | `null` |
@@ -312,7 +330,7 @@ Illustrative values for every column in the schema.
 | Column | Sample |
 | --- | --- |
 | `id` | `3232ff1-f23f-32f23-23f2f-23f23f23f23` |
-| `action_type` | `0 (badge_created:0, badge_category_created:1, badge_issued:2, badge_claimed:3, wallet_updated:4, badge_issued:5, badge_claimed:6)` |
+| `action_type` | `0 (badge_created:0, badge_category_created:1, badge_issued:2, badge_claimed:3, wallet_updated:4)` |
 | `entity_type` | `issuance (badge, badge_category, issuance, user, claim_intent)` |
 | `badge_id` | `0b1222b9-fd3f-4c4c-8e20-04a0670a74c2 (nullable, for badge-related operations)` |
 | `category_id` | `2fcb0271-6316-4c45-9375-8fca4c98840c (nullable, for category-related operations)` |
@@ -334,7 +352,7 @@ Illustrative values for every column in the schema.
 | --- | --- |
 | `id` | `ddf95ffa-3236-4413-be0a-09964fa7150d` |
 | `issuance_id` | `3bf34c2a-3bb0-47cb-9336-6a9c8f4ecb5a` |
-| `notification_type` | `0 (badging is issued and claimed(means that is sent to your wallet in case of blockchain-based badging, in other case only issued) : 0, only issued (in case of only blockchain-based badging) : 1`) |
+| `notification_type` | `0 (issued_and_claimed:0 - badge sent to wallet for blockchain-based, or issued for database-only, only_issued:1 - badge stored in contract vault, awaiting claim for blockchain-based only)` |
 | `mail_provider_id` | `mailman-msg-49811` |
 | `status` | `sent` |
 | `metadata` | `{"template":"contract-claim","attempt":1}` |
