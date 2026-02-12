@@ -1,226 +1,211 @@
----
-Report Date: 2025-12-23
-Summary Created: 2025-12-24
-Report Type: Research Report
-Topic: Corporate Avoidance of MIT License Due to Binary Attribution
----
+# MIT-licensed Code, Attribution, and Corporate Avoidance Policies
 
-# Research Report Summary: Corporate Avoidance of MIT License Due to Binary Attribution
+## 1. Executive summary
 
-## Executive Summary
+- No public, citable evidence was found that any large, market‑influential company explicitly avoids or bans MIT‑licensed code because of the MIT license’s attribution requirement in binaries or other user‑facing products.  
+- In contrast, major vendors such as Microsoft, Google, Meta, Apple, and Amazon widely use MIT‑licensed components and often release key projects under MIT, while managing attribution through standard notice mechanisms.[1][6][7][8][9][10][11][12][13][14][15][16]  
+- Industry guidance from OSPOs, open‑source foundations, and compliance vendors consistently treats MIT as a low‑risk, standard permissive license. Avoidance policies are instead focused on copyleft licenses and patent issues.[17][18][19][21][22][23][24][25]
 
-**Primary Finding:** No public evidence found that large, market-influential companies explicitly avoid MIT-licensed code because it requires preserving copyright and license notices in binaries or user-facing products.
-
-**Research Scope:** Publicly available materials reviewed (primarily up to late 2024, with some 2025 product documentation), including ~40 company open-source portals, >15 license classification documents, >30 product third-party notices, and >10 OSPO talks and white papers.
-
-**Key Limitation:** This finding reflects search results only and does not rule out non-public policies or informal practices.
+The overall weight of evidence indicates that MIT‑attribution‑driven avoidance is either extremely rare or, at least, not documented in public policies of major companies.
 
 ---
 
-## Critical Findings (High Priority)
+## 2. MIT license and attribution obligations
 
-### 1. No Explicit Avoidance Policies Found
+- The canonical MIT license requires that the copyright notice and permission notice be included in all copies or substantial portions of the software, including redistributed binaries.[1][2]  
+- The license does not require source‑code disclosure, copyleft propagation, or an explicit patent grant.[1][2]
 
-- Searched 2020-2025 policy documents, OSPO materials, engineering guidelines, and conference talks
-- No explicit statement found where a large company says: "We avoid MIT because its attribution requirement in binaries/UI is too burdensome"
-- Public OSPO surveys and governance reports (Linux Foundation, TODO Group) do not identify "MIT attribution in binaries/UI" as a recurring reason for inbound-license avoidance [21][23][24][25][26]
-
-### 2. MIT is Widely Accepted by Major Companies
-
-**Evidence of acceptance:**
-- Google: Treats MIT as permitted notice license in third-party rules [3][4][5]
-- Microsoft: Uses MIT widely in first-party projects and dependencies [7][20]
-- Meta: Relicensed React and major projects to MIT (moved away from BSD+Patents) [12]
-- Apple: Ships macOS/iOS with MIT components listed in open source releases [13]
-- Oracle, NetApp, IBM/Red Hat: All use MIT with standard attribution processes [9][11][14][15]
-
-**Quantitative evidence:**
-- MIT is the single most common license in public repositories [16][19]
-- Typical commercial applications contain hundreds of open-source components, with MIT among the most common [24]
-- Single Android device or desktop OS typically includes hundreds of third-party packages, many MIT-licensed [6][13][24]
-
-### 3. Attribution is Managed Operationally, Not Avoided
-
-**Standard approaches:**
-- Automated scanning and SBOM (Software Bill of Materials) tools [21][22][23][24][25][29][30]
-- Centralized LICENSE or third-party notices bundles [3][6][21][23][25][27][28]
-- Compliance programs aligned with OpenChain specification [21][22][30]
-- Standard platform locations (Android settings, app Legal sections, device documentation) [6][7][13][21][23][27]
-
-**Key insight:** Once compliance pipelines exist, the incremental cost of MIT's notice requirement is small relative to the overall compliance infrastructure cost [21][23][24][29][30].
+- Other common permissive licenses, such as BSD and Apache‑2.0, also require preservation of copyright and license notices. Apache‑2.0 additionally uses a NOTICE file mechanism for attribution.[1][2]  
+- Since Apache‑2.0 and BSD are widely adopted by enterprises, their similar or greater notice requirements suggest that attribution alone is not viewed as a decisive barrier.
 
 ---
 
-## Important Findings (Medium Priority)
+## 3. Search scope and methodology (high level)
 
-### What Companies Actually Avoid
+The research focused on finding documents that simultaneously:
 
-Public policies show avoidance or restrictions for:
-- Strong copyleft licenses (GPLv3, AGPL) [3][14][15][18][21][24]
-- Network copyleft or non-commercial licenses [3][14][15][18][21][23][24]
-- Licenses with unusual clauses (advertising, field-of-use restrictions) [3][14][15][18][21][23][24]
+1. Name the MIT license specifically.  
+2. State that MIT‑licensed components are avoided, forbidden, or discouraged in products or codebases.  
+3. Attribute this stance to MIT’s attribution or notice‑preservation requirements in binaries or user‑facing contexts.
 
-**Not** MIT-style permissive licenses with attribution requirements [3][14][15][18][21][22][23][24][25][26].
+Materials examined included:
 
-### Zero-Attribution Variants (MIT-0, 0BSD)
+- Public open‑source policies and OSPO documentation from major vendors such as Microsoft, Google, Meta, Apple, and Amazon.[6][11][12][14][15][16]  
+- Licenses and third‑party notice files for flagship projects and products that show real‑world inbound MIT usage.[7][8][9][10][13][14][20]  
+- OSPO playbooks and governance guidance from Johns Hopkins, Georgia Tech, GitHub, and the TODO Group.[17][18][19][21]  
+- Compliance and legal analyses from Snyk, FOSSA, Black Duck, the Linux Foundation, and OpenChain.[21][22][23][24][25]
 
-**What they are:**
-- MIT-0: MIT variant that removes attribution requirement [2][8]
-- 0BSD: No-attribution permissive license [17]
-
-**How companies use them:**
-- Outbound use: For sample code, templates, examples to minimize downstream obligations [2][8][17][19]
-- Not used as justification to avoid inbound MIT in public documents
-- Pattern: MIT accepted inbound; MIT-0/0BSD used outbound where zero obligations are a product goal
+No document was found that meets all three criteria.
 
 ---
 
-## Supporting Details (Lower Priority)
+## 4. Confirmed positive cases
 
-### Search Methodology
+### 4.1 Outcome
 
-**Timeframe:** 2018 to late 2025 (primary focus 2018-2024)
+- No confirmed positive cases were identified.  
+- For no large, market‑influential company was there any public policy, guideline, or authoritative statement that:
 
-**Sources reviewed:**
-- ~40 company open-source/legal portals
-- >15 explicit license classification documents
-- >30 product third-party notices from major vendors
-- >10 OSPO talks and white papers
+  - Names the MIT license,  
+  - Explicitly forbids or discourages using MIT‑licensed components, and  
+  - Explicitly cites MIT’s attribution or notice‑preservation requirement in binaries or user‑facing products as the reason.
 
-**Companies covered:** Apple, Microsoft, Google, Amazon, Meta, NVIDIA, Oracle, IBM, Red Hat, SAP, Adobe, Cisco, and others
+### 4.2 Why the absence is meaningful
 
-### Evidence Gaps and Limitations
-
-**Plausible but undocumented scenarios:**
-- Internal product-specific policies for particular product lines (e.g., consumer electronics with limited UI)
-- Informal preferences by engineering teams (e.g., prefer Apache-2.0 or MIT-0 without formal MIT bans)
-- Procurement/M&A due diligence preferences for suppliers with smaller license subsets
-- Highly regulated industries (aerospace, automotive, medical, defense) with stricter embedded software rules
-
-**Important:** These scenarios are plausible but not documented in reviewed sources. The absence of public MIT-avoidance means such policies are not prominent in public discourse, not that they don't exist anywhere.
+- Where companies publish explicit disallowed‑license lists or restrictions, these lists typically focus on AGPL, SSPL, some GPL contexts, and occasionally other niche licenses.[16][23][24][25]  
+- The same documents treat MIT as a standard permissive or notice‑based license, often recommended or preferred, which strongly suggests that attribution obligations under MIT are not viewed as a primary risk factor.
 
 ---
 
-## Practical Takeaways
+## 5. Plausible but inconclusive signals
 
-### For Policy and Engineering
+### 5.1 MIT‑0 (MIT No Attribution)
 
-1. **MIT remains widely accepted** among major technology companies as a standard permissive notice license [3][7][9][11][12][13][14][15][18][20][24][27][28]
+- MIT‑0 is an OSI‑approved variant of MIT that removes the requirement to preserve copyright and license notices, while retaining a broad grant of rights.[4]  
+- AWS maintains a public MIT‑0 template and explains that it is useful when code is intended as reference, teaching samples, or templates that others may copy into their own products, where even minor attribution friction is undesirable.[4][5]
 
-2. **No public evidence** that binary/UI attribution requirement causes avoidance, even though attribution management has real operational cost [6][14][15][21][23][24][29][30]
+- This clearly shows that some publishers want to relieve downstream users of attribution duties, especially for snippet‑like code.  
+- However, these materials describe outbound licensing choices and do not state that AWS or other large vendors avoid inbound MIT‑licensed dependencies for attribution reasons.[4][5][12][13]
 
-3. **When to use zero-attribution licenses:**
-   - MIT-0/0BSD appropriate for examples, snippets, templates [2][8][17][19]
-   - Goal: Minimize obligations for downstream users
+### 5.2 Boost Software License
 
-4. **Best practices for product development:**
-   - Build robust processes and tooling for tracking license notices [3][6][21][22][23][24][25][27][29][30]
-   - Address patent, copyleft, and non-commercial license questions (these are more common risk drivers) [14][15][18][21][22][23][24][26]
-   - Treat MIT as part of normal permissive notice license family, not a special risk category
+- The Boost Software License 1.0 is a permissive license that requires notices to be included in copies and derivative works, except when the software is distributed solely as compiled object code.[3]  
+- This object‑code carve‑out changes how attribution requirements apply when distributing only compiled object code under this license.[3]
 
----
+- This demonstrates that binary‑level attribution is recognized as an operational cost in some communities.  
+- It remains a design choice at license level; no public corporate policy was found that instructs engineers to favor Boost over MIT for inbound code specifically to avoid attribution.
 
-## Summary Comparison Table
+### 5.3 Individual or small‑vendor preferences
 
-| Question | Evidence-Based Answer |
-|---------|---------------------|
-| Any large company with public policy avoiding MIT due to binary/UI attribution? | No explicit, verifiable examples found in reviewed public materials. Non-public or informal practices possible but not documented. |
-| Do major companies accept MIT inbound? | Yes. MIT widely used and classified as standard permissive notice license [3][7][9][11][12][13][14][15][18][20][24][27][28]. |
-| How is MIT attribution typically implemented? | Consolidated LICENSE files, third-party notices, in-app legal screens. Often automated via compliance tooling [3][6][7][9][10][11][13][20][21][23][24][27][28][30]. |
-| Role of MIT-0 and 0BSD | Used mainly for outbound sample/template code to minimize downstream obligations, not as justification to avoid inbound MIT [2][8][17][19]. |
-| Main drivers of license avoidance | Strong copyleft, network copyleft, non-commercial, unusual custom licenses. MIT attribution treated as operational issue, not primary risk driver [3][14][15][18][21][22][23][24][25][26]. |
+- Various blog posts and legal commentaries recommend MIT‑0 or similar licenses for authors who wish to publish code without imposing attribution on downstream users.[4][5]  
+- These sources are about license selection by authors, not about inbound license policies of large enterprises.
 
 ---
 
-## Main Sources
+## 6. Negative findings for major companies
 
-[1] MIT License – Open Source Initiative  
-https://opensource.org/license/mit/
+The table below summarizes evidence for key vendors.
 
-[2] MIT License (including MIT-0) – Wikipedia  
-https://en.wikipedia.org/wiki/MIT_License
+| Company | Evidence of MIT usage | Any MIT‑specific avoidance due to attribution? | Key indicators |
+|--------|------------------------|-----------------------------------------------|----------------|
+| Microsoft | Operates a large open‑source portal.[6] Releases Visual Studio Code, TypeScript, and the .NET runtime under MIT.[7][8][9] Publishes extensive third‑party notices for products that include MIT components.[14] | None found. Public practice and licensing show MIT as first‑class; compliance guidance focuses on copyleft and patents, not avoiding MIT notices. | MIT licensing of flagship developer tools and presence of MIT in third‑party notices. |
+| Google | Runs a substantial open‑source program with detailed third‑party licensing guidance.[15][16] Public materials classify licenses and explicitly restrict AGPL, OSL, and SSPL, while not listing MIT as disallowed.[16] | None found. MIT appears as a standard permissive or notice‑based license; restrictions are aimed at strong copyleft and unusual licenses instead. | Explicit disallow lists that omit MIT, plus broad MIT usage in the ecosystem. |
+| Meta (Facebook) | React and related projects are licensed under MIT.[10] Meta publicly relicensed React, Jest, Flow, and Immutable.js from a custom BSD‑plus‑patent license to MIT to reduce friction for adopters.[11] | None found. The relicensing rationale is about community comfort and patent concerns, not attribution; Meta’s own flagship projects actively use MIT. | MIT relicensing statement and ongoing MIT use. |
+| Apple | Provides an open‑source portal listing Apple and third‑party components, including many under MIT, for macOS, iOS, and other products.[11] | None found. Apple ships MIT‑licensed components and fulfills attribution through standard acknowledgments and license bundles. | Public distribution of source and notices for MIT components. |
+| Amazon / AWS | Operates an open‑source portal showing projects under MIT and Apache‑2.0.[12] Uses MIT‑licensed dependencies in services such as Amazon Pay, documented via an open‑source attributions page.[13] Also publishes MIT‑0 for some outbound code.[4][5] | None found. Evidence shows extensive inbound and outbound MIT use; MIT‑0 is an additional outbound option, not a signal of inbound avoidance. | Attributions listing MIT components and active promotion of MIT‑family licenses. |
+| GitHub | OSPO releasing policy explicitly lists MIT as the preferred outbound license, with other licenses requiring legal review.[19] | None found. MIT is favored rather than avoided, indicating a view of MIT as simple and safe. | Direct policy language preferring MIT. |
+| Academic and institutional OSPOs (JHU, Georgia Tech) | Johns Hopkins OSPO lists MIT, BSD‑3‑Clause, and Apache‑2.0 as the most commonly used permissive licenses.[17] Georgia Tech OSPO lists MIT, BSD, Apache‑2.0, and LGPL as preferred, and flags GPLv3 and AGPL as not preferred.[18] | None found. These guides strongly endorse MIT as a standard permissive choice. | Explicit preference lists that include MIT. |
 
-[3] Licenses – Google third-party license categories and rules  
-https://opensource.google/documentation/reference/thirdparty/licenses
+Across these organizations, the pattern is consistent:
 
-[4] Compliance Linter – Google third-party licensing rules  
-https://opensource.google.com/docs/thirdparty/linter
+- MIT is used widely for both inbound dependencies and outbound open‑source projects.  
+- Attribution obligations are handled via consolidated notice files, LICENSE bundles, and product‑specific acknowledgments, not by avoiding MIT.
 
-[5] Third-Party code policy – Google Open Source  
-https://opensource.google/documentation/reference/thirdparty
+---
 
-[6] Android Open Source Project – Licenses and notice handling  
-https://source.android.com/docs/setup/start/licenses
+## 7. Industry governance and legal perspectives
 
-[7] Microsoft Third-Party Notices overview  
-https://learn.microsoft.com/en-us/legal/third-party-notices
+### 7.1 OSPO and foundation guidance
 
-[8] AWS MIT-0 (MIT No Attribution) License repository  
-https://github.com/aws/mit-0
+- The TODO Group’s OSPO guides, Johns Hopkins OSPO, Georgia Tech OSPO, and GitHub’s OSPO all treat MIT as a standard permissive license and often place it in the preferred or commonly used category.[17][18][19][21]  
+- These materials emphasize building license inventories, approval workflows, and automated notice‑file generation, rather than avoiding licenses with notice obligations.
 
-[9] Oracle Graal Development Kit for Micronaut 4.9.1 – Licensing Information User Manual (2025)  
-https://www.graal.cloud/gdk/about/lium/
+- None of these governance documents single out MIT’s attribution requirement in binaries as problematic.  
+- Instead, they identify copyleft and network‑copyleft licenses as the most challenging for commercial use.
 
-[10] Oracle Communications Network Data Analytics – Third-Party Notices and/or Licenses (2025)  
-https://docs.oracle.com/en/industries/communications/network-data-analytics/25.2.200/licensing_manual/third-party-notices-and-or-licenses1.html
+### 7.2 Compliance and attribution practice
 
-[11] NetApp CloudSecure Open Source License Notice (2025-04-14)  
-https://opensource.netapp.com/CloudSecure/2025-04-14_14:37:12/NOTICE.pdf
+- AboutCode’s best‑practices guide for open‑source attribution documents how large products aggregate license notices and attributions into credits pages, text files, or documentation bundles.[20]  
+- The Linux Foundation’s compliance terminology and OpenChain training describe attribution and license‑notice obligations as routine compliance tasks that apply to many permissive licenses, including MIT.[21][22]
 
-[12] Relicensing React, Jest, Flow, and Immutable.js to MIT – Meta engineering blog  
-https://engineering.fb.com/2017/09/22/open-source/react-license/
+- The overall message is that attribution should be managed through process and tooling, not by avoiding permissive licenses.  
+- This supports the observation that companies invest in attribution workflows instead of banning MIT.
 
-[13] Apple Open Source releases and third-party components  
-https://opensource.apple.com/
+### 7.3 Legal and risk assessments
 
-[14] Understanding open source licenses – IBM Developer  
-https://developer.ibm.com/articles/cl-osslicenses/
+- Snyk’s guide describes MIT as one of the simplest and most business‑friendly open‑source licenses, with primary obligations to preserve copyright and license text.[23]  
+- FOSSA’s MIT overview characterizes it as an extremely popular permissive license with very few restrictions, contrasting it with GPL and AGPL.[24]
 
-[15] A guide to open source licenses – Red Hat Developers  
-https://developers.redhat.com/articles/2021/01/14/guide-open-source-licenses
+- Black Duck’s survey of top open‑source licenses finds that MIT is among the most widely used licenses in modern codebases and on GitHub.[25]  
+- None of these analyses recommend avoiding MIT because of attribution requirements; instead, they recommend inventory and notice‑generation practices to ensure compliance.
 
-[16] Choose an open source license – GitHub / ChooseALicense (license popularity discussion)  
-https://choosealicense.com
+---
 
-[17] 0BSD License – Open Source Initiative  
-https://opensource.org/license/0bsd/
+## 8. Distinguishing MIT from other licensing concerns
 
-[18] SPDX License List – SPDX Workgroup (classification of MIT, BSD, Apache-2.0, etc.)  
-https://spdx.org/licenses/
+### 8.1 Copyleft and source‑disclosure obligations
 
-[19] MIT License usage and comparison – MIT License (statistics section) – Wikipedia  
-https://en.wikipedia.org/wiki/MIT_License#Usage
+- Many large companies restrict or avoid AGPL, some GPLv3 uses, and similar licenses because they can trigger obligations to provide source code, installation information, or extended network‑use rights.[16][23][24][25]  
+- MIT does not impose any such source‑disclosure or reciprocity obligations.[1][2][23][24]
 
-[20] Example Microsoft third-party notices for Visual Studio  
-https://learn.microsoft.com/en-us/legal/third-party-notices/visualstudio
+- Public disallow lists and internal policy summaries usually name these copyleft licenses explicitly.  
+- MIT is not grouped with them, which strongly suggests that MIT is not being avoided for similar reasons.
 
-[21] OpenChain Specification – Linux Foundation OpenChain Project (emphasis on processes and notice management)  
-https://www.openchainproject.org/specification
+### 8.2 Patent and indemnity issues
 
-[22] OpenChain Conformance and getting started materials – Linux Foundation OpenChain Project  
-https://www.openchainproject.org/getting-started
+- Enterprises often favor Apache‑2.0 over bare MIT for outbound code because Apache‑2.0 includes an explicit patent grant and termination clause, whereas MIT is silent on patents.[1][23][24]  
+- This preference is about patent risk management for code the company publishes.
 
-[23] Linux Foundation (ed.), "Practical Open Source Compliance" (white papers and guides to automating compliance and notices)  
-https://www.linuxfoundation.org/resources/publications/practical-open-source-compliance
+- The same companies still consume MIT‑licensed dependencies extensively, which shows that any Apache preference does not translate into inbound avoidance of MIT.  
+- If attribution were the decisive factor, Apache‑2.0’s NOTICE requirements and BSD attribution terms would raise similar concerns, yet they are widely accepted.
 
-[24] Synopsys (Black Duck), *Open Source Security and Risk Analysis* (OSSRA) Report (recent editions)  
-https://www.synopsys.com/software-integrity/resources/analyst-reports/open-source-security-risk-analysis.html
+### 8.3 Attribution as a manageable cost
 
-[25] TODO Group, *Open Source Program Office (OSPO): A Practical Guide* and related best-practice materials  
-https://todogroup.org/guides/creating-an-open-source-program/
+- Attribution requirements under MIT, BSD, and Apache‑2.0 are widely treated as a relatively low, but real, compliance cost that can be addressed through automation and standardized processes.[20][21][22][23][24]  
+- MIT‑0 and Boost demonstrate that some authors go further and remove or narrow attribution duties for the benefit of downstream users.[3][4][5]
 
-[26] Linux Foundation, *The Evolution of the Open Source Program Office* (OSPO survey/governance report)  
-https://www.linuxfoundation.org/resources/publications/the-evolution-of-the-open-source-program-office
+- There is still no evidence that major companies respond to these costs by banning inbound MIT.  
+- Instead, they respond by building better software composition analysis, bill‑of‑materials generation, and notice‑assembly tooling.
 
-[27] Intel, "Understanding Open Source License Obligations" (developer legal guidance)  
-https://www.intel.com/content/www/us/en/developer/articles/technical/open-source-license-obligations.html
+---
 
-[28] Cisco, Open Source licensing and notices portal (examples of MIT and other permissive licenses in products)  
-https://www.cisco.com/c/en/us/about/legal/open-source.html
+## 9. Overall assessment and implications
 
-[29] FOSSA, "Open Source License Compliance Challenges" (discussion of attribution and notice-management complexity)  
-https://fossa.com/blog/open-source-license-compliance-challenges/
+### 9.1 Summary of findings
 
-[30] Linux Foundation, Open source compliance and case studies (including company programs and notice tooling)  
-https://www.linuxfoundation.org/resources/case-studies/
+The table below maps the core elements of the research brief to the evidence found.
 
+| Research question element | Evidence pattern | Assessment |
+|---------------------------|------------------|-----------|
+| Do large companies explicitly avoid MIT because of attribution in binaries or user‑facing products? | No such explicit policies or statements were found for major vendors, despite extensive searching of OSPO documents, legal FAQs, and engineering blogs. | These MIT‑attribution‑driven avoidance policies appear to be rare to nonexistent in public documentation. |
+| How do large companies actually treat MIT? | MIT is used extensively for inbound dependencies and outbound flagship projects (for example, VS Code, TypeScript, .NET, React) and is often categorized as a preferred or standard permissive license.[6][7][8][9][10][11][17][18][19] | MIT is treated as a low‑risk, mainstream choice. |
+| Are there MIT‑like licenses designed to reduce attribution cost? | MIT‑0 removes attribution entirely; Boost removes notice obligations for pure object‑code distribution.[3][4][5] | These show that attribution is a recognized cost, but not that MIT is avoided as a result. |
+| How do governance bodies and legal guides view MIT? | OSPO playbooks, Linux Foundation and OpenChain materials, and legal vendors characterize MIT as simple and widely adopted, focusing concern on copyleft and patent‑heavy licenses instead.[17][18][19][21][22][23][24][25] | Industry guidance does not flag MIT attribution as a major adoption risk. |
+
+### 9.2 Implications for license choice
+
+- Organizations choosing a license for new projects should not assume that MIT’s attribution requirement alone will materially deter adoption by large enterprises.  
+- Existing practice shows that major vendors already consume and ship substantial volumes of MIT‑licensed code and have built mature processes to handle attribution.[6][7][8][9][10][11][12][13][14][15][16]
+
+- Licenses like MIT‑0 or Boost may still be attractive when the goal is to minimize any attribution friction for downstream users, particularly for embedded snippets, configuration templates, or space‑constrained UIs.[3][4][5]  
+- However, the publicly available record does not support framing MIT’s attribution clause as a common or documented reason for avoidance by large, market‑influential companies.
+
+---
+
+### Sources
+
+[1] MIT License – Open Source Initiative: https://opensource.org/license/mit  
+[2] MIT License – Wikipedia: https://en.wikipedia.org/wiki/MIT_License  
+[3] Boost Software License 1.0 – Open Source Initiative: https://opensource.org/license/bsl-1-0  
+[4] MIT No Attribution License – Open Source Initiative: https://opensource.org/license/mit-0  
+[5] MIT No Attribution (MIT‑0) – AWS GitHub: https://github.com/aws/mit-0  
+[6] Microsoft Open Source: https://opensource.microsoft.com  
+[7] Visual Studio Code License (MIT) – GitHub: https://github.com/microsoft/vscode/blob/main/LICENSE.txt  
+[8] TypeScript License (MIT) – GitHub: https://github.com/microsoft/TypeScript/blob/main/LICENSE.txt  
+[9] .NET Runtime License (MIT) – GitHub: https://github.com/dotnet/runtime/blob/main/LICENSE.TXT  
+[10] React License (MIT) – GitHub: https://github.com/facebook/react/blob/main/LICENSE  
+[11] Relicensing React, Jest, Flow, and Immutable.js – Meta Engineering: https://engineering.fb.com/2017/09/22/web/relicensing-react-jest-flow-and-immutable-js  
+[12] AWS Open Source: https://aws.amazon.com/opensource  
+[13] Amazon Pay – Open Source Attributions: https://developer.amazon.com/docs/amazon-pay-checkout/open-source-attributions.html  
+[14] Microsoft Third‑Party Notices: https://www.microsoft.com/en-us/legal/third-party-notices  
+[15] Google Open Source: https://opensource.google  
+[16] Google – Third‑Party Licenses Guidance: https://opensource.google/documentation/reference/thirdparty/licenses  
+[17] Johns Hopkins OSPO – Open Source Software and Licenses: https://ospo.library.jhu.edu/open-source-software-and-licenses  
+[18] Georgia Tech OSPO – Open Source Software Licensing: https://ospo.cc.gatech.edu/open-source-software-licensing  
+[19] GitHub OSPO – Releasing Policy: https://github.com/github/github-ospo/blob/main/policies/releasing.md  
+[20] AboutCode – Best Practices for OSS Attribution: https://aboutcode.org/2015/oss-attribution-best-practices  
+[21] Linux Foundation – Compliance Terminology for Developers: https://compliance.linuxfoundation.org/developers/terminology  
+[22] OpenChain Curriculum Release 2 (PDF): https://wiki.linuxfoundation.org/_media/openchain/openchain-curriculum-release-2-with-notes.pdf  
+[23] Snyk – What is the MIT License: https://snyk.io/learn/what-is-mit-license  
+[24] FOSSA – Open Source Licenses 101: The MIT License: https://fossa.com/blog/open-source-licenses-101-mit-license  
+[25] Black Duck – Top Open Source Licenses: https://www.blackduck.com/blog/top-open-source-licenses.html
